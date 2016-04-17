@@ -1,0 +1,74 @@
+﻿<Controls:MetroWindow x:Class="ArticlesDispenser.GUI.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:Controls="http://metro.mahapps.com/winfx/xaml/controls"
+        xmlns:local="clr-namespace:ArticlesDispenser.GUI"
+        xmlns:viewModel="clr-namespace:ArticlesDispenser.ViewModel;assembly=ArticlesDispenser.ViewModel"
+        xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+        Title="Články - Pocket"
+        Height="768" Width="1024">
+    <Window.DataContext>
+        <viewModel:MainWindowViewModel />
+    </Window.DataContext>
+    <Window.Resources>
+        <viewModel:StringsJoiningConverter x:Key="StringsJoiningConverter" />
+        <viewModel:OptionsTypeConverter x:Key="OptionsTypeConverter" />
+        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
+    </Window.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <GroupBox Header="Články">
+            <DataGrid ItemsSource="{Binding Articles}" Margin="5"  AutoGenerateColumns="False" 
+                  SelectedItem="{Binding SelectedArticle, Converter={StaticResource OptionsTypeConverter}}" IsReadOnly="True"
+                  LoadingRow="DataGrid_LoadingRow">
+                <DataGrid.Columns>
+                    <DataGridTextColumn  Header="Název" Width="50*" Binding="{Binding Title}" />
+                    <DataGridTextColumn  Header="Tagy" Width="25*" Binding="{Binding Tags, Converter={StaticResource ResourceKey=StringsJoiningConverter}}" />
+                    <DataGridTextColumn Header="Délka" Width="10*" Binding="{Binding Length}"/>
+                    <DataGridTextColumn Header="Uloženo" Width="10*" Binding="{Binding AddedDateTime, StringFormat=d, ConverterCulture=cs-CZ}"/>
+                </DataGrid.Columns>
+            </DataGrid>
+        </GroupBox>
+        <StackPanel Orientation="Vertical" Grid.Row="1">
+            <Button Content="Přihlásit" Command="{Binding LoginCommand}" CommandParameter="{Binding}"  Margin="5"/>
+            <Button Content="Stahuj..." Command="{Binding DownloadCommand}" Margin="5" />
+            <Button Content="Otevři článek" Command="{Binding OpenArticleCommand}" Margin="5" />
+            <GroupBox Header="Filtry">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition />
+                        <ColumnDefinition />
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition />
+                        <RowDefinition />
+                        <RowDefinition />
+                        <RowDefinition />
+                    </Grid.RowDefinitions>
+                    <TextBlock Text="Pouze s tagy:" Margin="5" />
+                    <TextBox Text="{Binding Filtering.SelectedTags}" Grid.Column="1" Margin="5"/>
+                    <TextBlock Text="Bez tagů:" Margin="5"  Grid.Row="1"/>
+                    <TextBox Text="{Binding Filtering.ForbiddenTags}" Grid.Column="1" Grid.Row="1" Margin="5"/>
+                    <TextBlock Text="S maximální délkou:" Margin="5"  Grid.Row="2"/>
+                    <TextBox Text="{Binding Filtering.MaxLength}" Grid.Column="1" Grid.Row="2" Margin="5"/>
+                    <Button Content="Filtrovat" Command="{Binding FilterCommand}" Margin="5" Grid.Row="3" Grid.ColumnSpan="2" HorizontalAlignment="Center" Width="200" />
+                </Grid>
+            </GroupBox>
+            <GroupBox Header="Poskytování článků" DataContext="{Binding Dispensing}">
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                    <Button Content="Nejkratší" Command="{Binding OpenShortestArticleCommand}" Width="110" Margin="5"/>
+                    <Button Content="Nejdelší"  Command="{Binding OpenLongestArticleCommand}"  Width="110" Margin="5"/>
+                    <Button Content="Nejstarší"  Command="{Binding OpenOldestArticleCommand}"  Width="110" Margin="5"/>
+                    <Button Content="Nejnovější"  Command="{Binding OpenNewestArticleCommand}"  Width="110" Margin="5"/>
+                    <Button Content="Náhodně"  Command="{Binding OpenRandomArticleCommand}"  Width="110" Margin="5"/>
+                </StackPanel>
+            </GroupBox>
+            <GroupBox Header="Status" >
+                <TextBlock Text="{Binding Status}" />
+            </GroupBox>
+        </StackPanel>
+    </Grid>
+</Controls:MetroWindow>

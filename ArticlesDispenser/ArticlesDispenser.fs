@@ -15,3 +15,8 @@ let getNextArticle filter selectedStrategy articles =
     |> filter
     |> Seq.sortBy selectedStrategy
     |> Seq.head
+    
+let selectNextArticle selectedStrategy articles = 
+    articles
+    |> Seq.sortBy selectedStrategy
+    |> Seq.head

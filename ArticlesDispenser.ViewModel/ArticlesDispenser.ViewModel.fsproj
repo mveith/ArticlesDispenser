@@ -1,18 +1,19 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>1e1e6004-e9dc-40a1-9822-6659e631959d</ProjectGuid>
+    <ProjectGuid>e083a882-602c-41e2-b935-90cea4666c76</ProjectGuid>
     <OutputType>Library</OutputType>
-    <RootNamespace>ArticlesDispenser</RootNamespace>
-    <AssemblyName>ArticlesDispenser</AssemblyName>
+    <RootNamespace>ArticlesDispenser.ViewModel</RootNamespace>
+    <AssemblyName>ArticlesDispenser.ViewModel</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
-    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <TargetFSharpCoreVersion>4.3.1.0</TargetFSharpCoreVersion>
-    <Name>ArticlesDispenser</Name>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <Name>ArticlesDispenser.ViewModel</Name>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -22,10 +23,7 @@
     <OutputPath>bin\Debug\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <WarningLevel>3</WarningLevel>
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <DocumentationFile>bin\Debug\ArticlesDispenser.XML</DocumentationFile>
-    <Prefer32Bit>true</Prefer32Bit>
-    <StartArguments>programování</StartArguments>
+    <DocumentationFile>bin\Debug\ArticlesDispenser.ViewModel.XML</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -34,9 +32,7 @@
     <OutputPath>bin\Release\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <WarningLevel>3</WarningLevel>
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <DocumentationFile>bin\Release\ArticlesDispenser.XML</DocumentationFile>
-    <Prefer32Bit>true</Prefer32Bit>
+    <DocumentationFile>bin\Release\ArticlesDispenser.ViewModel.XML</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup>
     <MinimumVisualStudioVersion Condition="'$(MinimumVisualStudioVersion)' == ''">11</MinimumVisualStudioVersion>
@@ -55,30 +51,34 @@
   </Choose>
   <Import Project="$(FSharpTargetsPath)" />
   <ItemGroup>
-    <Compile Include="Utils.fs" />
-    <Compile Include="Article.fs" />
-    <Compile Include="PocketApi.fs" />
-    <Compile Include="PocketApiAuthorization.fs" />
-    <Compile Include="JSONParser.fs" />
-    <Compile Include="ArticleFilters.fs" />
-    <Compile Include="ArticlesDispenser.fs" />
-    <None Include="packages.config" />
+    <Compile Include="DelegateCommand.fs" />
+    <Compile Include="AsyncDelegateCommand.fs" />
+    <Compile Include="OptionsTypeConverter.fs" />
+    <Compile Include="StringsJoiningConverter.fs" />
+    <Compile Include="Filtering.fs" />
+    <Compile Include="ViewModelBase.fs" />
+    <Compile Include="Dispensing.fs" />
+    <Compile Include="MainWindowViewModel.fs" />
+    <Content Include="app.config" />
+    <Content Include="ConsumerKey.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="FSharp.Data">
-      <HintPath>..\packages\FSharp.Data.2.2.5\lib\net40\FSharp.Data.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="mscorlib" />
     <Reference Include="FSharp.Core, Version=$(TargetFSharpCoreVersion), Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
       <Private>True</Private>
     </Reference>
+    <Reference Include="PresentationFramework" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Net.Http" />
-    <Reference Include="System.Net.Http.WebRequest" />
     <Reference Include="System.Numerics" />
-    <Reference Include="System.Xml.Linq" />
+    <ProjectReference Include="..\ArticlesDispenser\ArticlesDispenser.fsproj">
+      <Name>ArticlesDispenser</Name>
+      <Project>{1e1e6004-e9dc-40a1-9822-6659e631959d}</Project>
+      <Private>True</Private>
+    </ProjectReference>
   </ItemGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

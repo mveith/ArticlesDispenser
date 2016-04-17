@@ -4,11 +4,15 @@ open System
 open System.Collections.Generic
 open System.Net.Http
 
-let createAccessParameters consumerKey accessKey = 
+let createParameters consumerKey = 
     let methodParameters = new Dictionary<string, string>()
     methodParameters.Add("consumer_key", consumerKey)
-    methodParameters.Add("access_token", accessKey)
     methodParameters
+
+let createAccessParameters consumerKey accessKey = 
+    let parameters = createParameters consumerKey
+    parameters.Add("access_token", accessKey)
+    parameters
 
 let createRequest methodParameters (methodName : string) = 
     let request = new HttpRequestMessage(HttpMethod.Post, methodName)

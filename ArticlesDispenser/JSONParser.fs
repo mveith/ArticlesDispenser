@@ -1,42 +1,52 @@
 ﻿module JSONParser
 
+open FSharp.Data
+open FSharp.Data.JsonExtensions
 open System
-open Newtonsoft.Json
-open Newtonsoft.Json.Linq
 open Article
 
-let getItemProperty (propertyName : string) (itemToken : JToken) = 
-    itemToken.SelectToken(propertyName).ToString()
-
-let getArticleTags (itemToken : JToken) = 
-    let tagsToken = itemToken.SelectToken("tags")
-    match tagsToken with
-    | null -> [| "_untagged_" |]
-    | _ -> 
-        tagsToken
-        |> Seq.collect (fun x -> x |> Seq.map (fun i -> i.SelectToken("tag").ToString()))
-        |> Seq.toArray
-
-let getArticleAddedDate (itemToken:JToken)=
+let convertToDate secondsCount = 
     let baseDate = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
-    let dateToken = getItemProperty "time_added" itemToken
-    let utcDate = dateToken |> float |> baseDate.AddSeconds
+    let utcDate = secondsCount |> baseDate.AddSeconds
     utcDate.ToLocalTime()
 
-let parseItem (itemToken : JToken) = 
-    new Article(getItemProperty "item_id" itemToken |> Int32.Parse, 
-                getItemProperty "resolved_title" itemToken, 
-                getItemProperty "excerpt" itemToken, 
-                getItemProperty "word_count" itemToken |> Int32.Parse, 
-                getArticleTags itemToken,
-                getArticleAddedDate itemToken)
+let getValues (parentValue : JsonValue) = parentValue.Properties |> Seq.map (fun (prop, value) -> value)
+
+let parseTags (tags : option<JsonValue>) = 
+    match tags with
+    | option.None -> [| "_untagged_" |]
+    | option.Some value -> 
+        value
+        |> getValues
+        |> Seq.map (fun v -> (v?tag).AsString())
+        |> Seq.toArray
+
+let isResolvedArticle (value : JsonValue) = 
+    let isResolved = (value?resolved_id).AsInteger() > 0
+    isResolved
+
+let createArticle (value : JsonValue) = 
+    let id = (value?item_id).AsInteger()
+    let isResolvedArticle = isResolvedArticle value
+    
+    let title = 
+        if isResolvedArticle then (value?resolved_title).AsString()
+        else (value?given_url).AsString()
+    
+    let summary = 
+        if isResolvedArticle then (value?excerpt).AsString()
+        else String.Empty
+    
+    let length = 
+        if isResolvedArticle then (value?word_count).AsInteger()
+        else 0
+    
+    let tags = parseTags (value.TryGetProperty("tags"))
+    let date = convertToDate ((value?time_added).AsFloat())
+    new Article(id, title, summary, length, tags, date)
 
 let parseArticles (json : string) = 
-    let articlesJson = JObject.Parse(json).SelectToken("list").ToString()
-    
-    let articles = 
-        JsonConvert.DeserializeObject<JObject>(articlesJson)
-        |> Seq.map (fun x -> x.First)
-        |> Seq.map parseItem
-        |> Seq.toArray
-    articles
+    let root = JsonValue.Parse(json)
+    root?list
+    |> getValues
+    |> Seq.map createArticle
